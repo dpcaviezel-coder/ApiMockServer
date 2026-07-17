@@ -1,0 +1,17 @@
+[
+  {
+    "Method": "GET",
+    "Path": "/users",
+    "Endpoint": "Users"
+  },
+  {
+    "Method": "POST",
+    "Path": "/products",
+    "Endpoint": "Products"
+  },
+  {
+    "Method": "POST",
+    "Path": "/auth",
+    "Endpoint": "Auth"
+  }
+]

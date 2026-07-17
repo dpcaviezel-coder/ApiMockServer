@@ -1,0 +1,6 @@
+{
+  "Port": 5000,
+  "DelayMs": 200,
+  "EnableRandomErrors": false,
+  "RoutesFile": "Config/routes.json"
+}
