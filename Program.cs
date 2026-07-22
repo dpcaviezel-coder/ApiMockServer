@@ -1,9 +1,13 @@
 using ApiMockServer.Server;
 
-class Program
+namespace ApiMockServer
 {
-    static void Main()
+    public class Program
     {
-        MockServer.Run();
+        public static void Main(string[] args)
+        {
+            var server = new MockServer();
+            server.Start();
+        }
     }
 }

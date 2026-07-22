@@ -1,14 +1,11 @@
-using System;
-using System.Threading;
-
 namespace ApiMockServer.Server
 {
     public static class DelaySimulator
     {
-        public static void ApplyDelay(int delayMs)
+        public static void Apply(int ms)
         {
-            if (delayMs > 0)
-                Thread.Sleep(delayMs);
+            if (ms > 0)
+                Thread.Sleep(ms);
         }
     }
 }

@@ -1,43 +1,41 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Text.Json;
+using ApiMockServer.Endpoints;
 
 namespace ApiMockServer.Server
 {
-    public class RouteDefinition
+    public class RouteHandler
     {
-        public string Method { get; set; }
-        public string Path { get; set; }
-        public string Endpoint { get; set; }
-    }
+        private readonly Dictionary<string, IEndpoint> _routes = new();
 
-    public static class RouteHandler
-    {
-        private static RouteDefinition[] _routes;
-
-        public static RouteDefinition MatchRoute(HttpListenerRequest request, ServerConfig config)
+        public void Load(string json)
         {
-            if (_routes == null)
+            var routeDefs = JsonSerializer.Deserialize<List<RouteDefinition>>(json)!;
+
+            foreach (var route in routeDefs)
             {
-                var json = File.ReadAllText(config.RoutesFile);
-                _routes = JsonSerializer.Deserialize<RouteDefinition[]>(json);
+                _routes[route.Path] = route.Method switch
+                {
+                    "GET" => CreateEndpoint(route),
+                    "POST" => CreateEndpoint(route),
+                    _ => new CustomEndpoint(route)
+                };
             }
+        }
 
-            var path = request.Url.AbsolutePath.TrimEnd('/');
-            var method = request.HttpMethod.ToUpperInvariant();
-
-            var match = _routes.FirstOrDefault(r =>
-                r.Method.Equals(method, StringComparison.OrdinalIgnoreCase) &&
-                r.Path.Equals(path, StringComparison.OrdinalIgnoreCase));
-
-            return match ?? new RouteDefinition
+        private IEndpoint CreateEndpoint(RouteDefinition def)
+        {
+            return def.Type switch
             {
-                Method = method,
-                Path = path,
-                Endpoint = "NotFound"
+                "users" => new UsersEndpoint(),
+                "products" => new ProductsEndpoint(),
+                "auth" => new AuthEndpoint(),
+                _ => new CustomEndpoint(def)
             };
+        }
+
+        public IEndpoint? Resolve(string path, string method)
+        {
+            return _routes.TryGetValue(path, out var ep) ? ep : null;
         }
     }
 }

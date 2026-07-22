@@ -1,21 +1,14 @@
-// This file is for documentation only.
-// It does not need to be compiled.
-
-//
-// How to add a custom route
-//
-
-// 1. Open Config/routes.json
-// 2. Add a new route entry:
-//
-// {
-//   "Method": "GET",
-//   "Path": "/custom",
-//   "Endpoint": "Custom"
-// }
-//
-// 3. Create or edit Endpoints/CustomEndpoint.cs
-// 4. Restart the server OR use hot reload if implemented
-//
-// Now you can call:
-// http://localhost:5000/custom
+namespace ApiMockServer.Examples
+{
+    public static class AddingCustomRoutes
+    {
+        public static void Run()
+        {
+            Console.WriteLine("To add a custom route:");
+            Console.WriteLine("1. Edit Config/routes.json");
+            Console.WriteLine("2. Add a new entry with path, method, type, responseFile");
+            Console.WriteLine("3. Create the matching JSON file in Responses/");
+            Console.WriteLine("4. Restart the server.");
+        }
+    }
+}

@@ -1,31 +1,15 @@
-using System;
-using System.Net;
+using System.Text;
 
 namespace ApiMockServer.Server
 {
     public static class ErrorSimulator
     {
-        private static readonly Random _random = new Random();
-
-        public static bool TryInjectError(HttpListenerResponse response, ServerConfig config)
+        public static void SendNotFound(HttpListenerContext ctx)
         {
-            if (!config.EnableRandomErrors)
-                return false;
-
-            var roll = _random.Next(0, 10);
-            if (roll < 3) // 30% chance
-            {
-                int[] codes = { 400, 401, 403, 404, 500 };
-                int code = codes[_random.Next(codes.Length)];
-                response.StatusCode = code;
-
-                using var writer = new System.IO.StreamWriter(response.OutputStream);
-                writer.Write($"{{\"error\":\"Injected error\",\"status\":{code}}}");
-                writer.Flush();
-                return true;
-            }
-
-            return false;
+            var msg = Encoding.UTF8.GetBytes("{\"error\":\"Not Found\"}");
+            ctx.Response.StatusCode = 404;
+            ctx.Response.OutputStream.Write(msg);
+            ctx.Response.OutputStream.Close();
         }
     }
 }

@@ -1,4 +1,12 @@
 [
-  { "id": 1, "name": "Alice" },
-  { "id": 2, "name": "Bob" }
+  {
+    "id": 1,
+    "username": "alpha",
+    "email": "alpha@example.com"
+  },
+  {
+    "id": 2,
+    "username": "beta",
+    "email": "beta@example.com"
+  }
 ]

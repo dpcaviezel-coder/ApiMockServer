@@ -1,61 +1,63 @@
-using System;
-using System.IO;
-using System.Net;
 using System.Text.Json;
 using ApiMockServer.Server;
 
 namespace ApiMockServer.Server
 {
-    public static class MockServer
+    public class MockServer
     {
-        public static void Run()
+        private ServerConfig _config = new();
+        private RouteHandler _routes = new();
+
+        public void Start()
         {
-            Console.WriteLine("API Mock Server");
+            LoadConfig();
+            LoadRoutes();
 
-            var configPath = Path.Combine("Config", "server.json");
-            var configJson = File.ReadAllText(configPath);
-            var config = JsonSerializer.Deserialize<ServerConfig>(configJson);
-
-            var listener = new HttpListener();
-            listener.Prefixes.Add($"http://localhost:{config.Port}/");
-            listener.Start();
-
-            Console.WriteLine($"Server running on http://localhost:{config.Port}/");
+            Console.WriteLine($"Mock API Server running on port {_config.Port}");
             Console.WriteLine("Press Ctrl+C to stop.");
+
+            using var listener = new HttpListener();
+            listener.Prefixes.Add($"http://localhost:{_config.Port}/");
+            listener.Start();
 
             while (true)
             {
                 var context = listener.GetContext();
-                HandleRequest(context, config);
+                HandleRequest(context);
             }
         }
 
-        private static void HandleRequest(HttpListenerContext context, ServerConfig config)
+        private void LoadConfig()
         {
-            var request = context.Request;
-            var response = context.Response;
-
-            Logger.LogRequest(request);
-
-            DelaySimulator.ApplyDelay(config.DelayMs);
-            if (ErrorSimulator.TryInjectError(response, config))
-                return;
-
-            var route = RouteHandler.MatchRoute(request, config);
-            var body = ResponseBuilder.BuildResponse(route, request);
-
-            response.ContentType = "application/json";
-            using var writer = new StreamWriter(response.OutputStream);
-            writer.Write(body);
-            writer.Flush();
+            var json = File.ReadAllText("Config/server.json");
+            _config = JsonSerializer.Deserialize<ServerConfig>(json)!;
         }
-    }
 
-    public class ServerConfig
-    {
-        public int Port { get; set; } = 5000;
-        public int DelayMs { get; set; } = 0;
-        public bool EnableRandomErrors { get; set; } = false;
-        public string RoutesFile { get; set; } = "Config/routes.json";
+        private void LoadRoutes()
+        {
+            var json = File.ReadAllText("Config/routes.json");
+            _routes.Load(json);
+        }
+
+        private void HandleRequest(HttpListenerContext context)
+        {
+            var path = context.Request.Url!.AbsolutePath;
+            var method = context.Request.HttpMethod;
+
+            Logger.Log($"{method} {path}");
+
+            var endpoint = _routes.Resolve(path, method);
+
+            if (endpoint == null)
+            {
+                ErrorSimulator.SendNotFound(context);
+                return;
+            }
+
+            DelaySimulator.Apply(_config.Delay);
+
+            var response = endpoint.Handle(context);
+            ResponseBuilder.SendJson(context, response);
+        }
     }
 }

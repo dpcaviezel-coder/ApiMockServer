@@ -1,14 +1,14 @@
-using System.IO;
 using System.Net;
+using System.Text.Json;
 
 namespace ApiMockServer.Endpoints
 {
-    public static class UsersEndpoint
+    public class UsersEndpoint : IEndpoint
     {
-        public static string Handle(HttpListenerRequest request)
+        public object Handle(HttpListenerContext ctx)
         {
-            var path = Path.Combine("Responses", "users.json");
-            return File.ReadAllText(path);
+            var json = File.ReadAllText("Responses/users.json");
+            return JsonSerializer.Deserialize<object>(json)!;
         }
     }
 }

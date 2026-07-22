@@ -1,30 +1,24 @@
-using System;
-using System.IO;
-using System.Net;
+using System.Text;
 using System.Text.Json;
-using ApiMockServer.Endpoints;
 
 namespace ApiMockServer.Server
 {
     public static class ResponseBuilder
     {
-        public static string BuildResponse(RouteDefinition route, HttpListenerRequest request)
+        public static void SendJson(HttpListenerContext ctx, object data)
         {
-            switch (route.Endpoint)
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
             {
-                case "Users":
-                    return UsersEndpoint.Handle(request);
+                WriteIndented = true
+            });
 
-                case "Products":
-                    return ProductsEndpoint.Handle(request);
+            var buffer = Encoding.UTF8.GetBytes(json);
 
-                case "Auth":
-                    return AuthEndpoint.Handle(request);
+            ctx.Response.ContentType = "application/json";
+            ctx.Response.ContentLength64 = buffer.Length;
 
-                case "NotFound":
-                default:
-                    return JsonSerializer.Serialize(new { error = "Route not found", path = route.Path });
-            }
+            ctx.Response.OutputStream.Write(buffer);
+            ctx.Response.OutputStream.Close();
         }
     }
 }

@@ -1,25 +1,28 @@
-using System.IO;
 using System.Net;
 using System.Text.Json;
 
 namespace ApiMockServer.Endpoints
 {
-    public static class AuthEndpoint
+    public class AuthEndpoint : IEndpoint
     {
-        public static string Handle(HttpListenerRequest request)
+        public object Handle(HttpListenerContext ctx)
         {
-            using var reader = new StreamReader(request.InputStream);
+            using var reader = new StreamReader(ctx.Request.InputStream);
             var body = reader.ReadToEnd();
 
-            if (body.Contains("\"password\":\"secret\""))
+            var payload = JsonSerializer.Deserialize<Dictionary<string, string>>(body);
+            var username = payload?["username"];
+            var password = payload?["password"];
+
+            if (username == "testuser" && password == "password123")
             {
-                var path = Path.Combine("Responses", "auth_success.json");
-                return File.ReadAllText(path);
+                var json = File.ReadAllText("Responses/auth_success.json");
+                return JsonSerializer.Deserialize<object>(json)!;
             }
             else
             {
-                var path = Path.Combine("Responses", "auth_fail.json");
-                return File.ReadAllText(path);
+                var json = File.ReadAllText("Responses/auth_fail.json");
+                return JsonSerializer.Deserialize<object>(json)!;
             }
         }
     }
