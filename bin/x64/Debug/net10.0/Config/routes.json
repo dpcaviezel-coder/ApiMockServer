@@ -1,0 +1,26 @@
+[
+  {
+    "path": "/auth",
+    "method": "POST",
+    "type": "auth",
+    "responseFile": "auth_success.json"
+  },
+  {
+    "path": "/users",
+    "method": "GET",
+    "type": "users",
+    "responseFile": "users.json"
+  },
+  {
+    "path": "/products",
+    "method": "GET",
+    "type": "products",
+    "responseFile": "products.json"
+  },
+  {
+    "path": "/custom/info",
+    "method": "GET",
+    "type": "custom",
+    "responseFile": "custom_info.json"
+  }
+]

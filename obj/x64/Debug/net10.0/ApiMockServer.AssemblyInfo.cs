@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ApiMockServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e04a8e33910c5c6663c980cc42f148f09927b82c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+99fe02091eacd51b6109a0ee1975423d4eaf3d17")]
 [assembly: System.Reflection.AssemblyProductAttribute("ApiMockServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ApiMockServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

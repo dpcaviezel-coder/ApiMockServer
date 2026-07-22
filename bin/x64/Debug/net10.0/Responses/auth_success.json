@@ -1,0 +1,8 @@
+{
+  "status": "success",
+  "token": "fake-jwt-token-123",
+  "user": {
+    "username": "testuser",
+    "role": "admin"
+  }
+}
